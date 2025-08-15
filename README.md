@@ -1,73 +1,181 @@
-# Welcome to your Lovable project
+# PayLite Self-Report (WA) — Ultimate
 
-## Project info
+Ultra-modern payment confirmation web application with neon design, auto-resize image uploads, JPG receipt generation, and WhatsApp integration.
 
-**URL**: https://lovable.dev/projects/1c20554a-2ecc-4529-9f4c-c410ee0a9e8c
+## 🎯 Features
 
-## How can I edit this code?
+- **Landing Page**: Introduction with neon-themed design and clear CTA
+- **Payment Method Selection**: QRIS, Transfer Bank, E-Wallet, Cash with copy-to-clipboard functionality
+- **Smart Form**: Auto-fill, mandatory proof upload with auto-resize, strict validation
+- **Receipt Generation**: Auto-download JPG receipts with unique numbering
+- **WhatsApp Integration**: Formatted message with payment details sent automatically
+- **Progress Tracking**: 4-step indicator across the user journey
 
-There are several ways of editing your application.
+## 🎨 Design System
 
-**Use Lovable**
+- **Theme**: Neon cyan (#00FFFF) and green (#39FF14) on dark background (#0B0B0B)
+- **Effects**: Glassmorphism, glow effects, animated grid background
+- **Typography**: Inter font family
+- **Animations**: Smooth fade-ins, glow pulses, respectful of `prefers-reduced-motion`
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1c20554a-2ecc-4529-9f4c-c410ee0a9e8c) and start prompting.
+## 🛠 Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS with custom design tokens
+- **Forms**: React Hook Form + Zod validation
+- **Image Processing**: Browser Image Compression
+- **Receipt Generation**: HTML-to-Image
+- **UI Components**: Shadcn/ui + Lucide React icons
 
-**Use your preferred IDE**
+## 🔧 Environment Configuration
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Create a `.env.local` file with these variables (or update `src/lib/env.ts`):
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```env
+OWNER_WHATSAPP=6285883795285
+MERCHANT_NAME="Mark Xplorer"
+RECEIPT_SIGN_SECRET="paylite-secret-key-2024"
+PAYMENT_ACCOUNT_BANK="BCA 123456789 a/n Mark Xplorer"
+PAYMENT_ACCOUNT_EWALLET="@markxplorer"
+QRIS_STATIC_IMAGE_URL="https://placeholder.co/300x300/00FFFF/000000?text=QRIS+CODE"
+SAWERIA_URL="https://saweria.co/markxplorer"
+SOCIAL_INSTAGRAM="https://instagram.com/markxplorer"
+SOCIAL_TELEGRAM="https://t.me/markxplorer"
+SOCIAL_GITHUB="https://github.com/markxplorer"
+BASE_URL="https://paylite-report.vercel.app"
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Quick Start
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-**Use GitHub Codespaces**
+2. **Start development server**:
+   ```bash
+   npm run dev
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Build for production**:
+   ```bash
+   npm run build
+   ```
 
-## What technologies are used for this project?
+## 📱 User Flow
 
-This project is built with:
+1. **Landing** (`/`) - Introduction and CTA
+2. **Payment Method** (`/payment`) - Choose QRIS/Transfer/E-Wallet/Cash with instructions
+3. **Form** (`/form`) - Fill details, upload proof (auto-resize), generate receipt
+4. **WhatsApp** - Auto-formatted message sent to merchant
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔐 Security Features
 
-## How can I deploy this project?
+- **Input Validation**: Strict Zod schemas with custom validators
+- **Image Processing**: Auto-resize to prevent large uploads
+- **Signature Generation**: HMAC SHA-256 for receipt authenticity
+- **Data Sanitization**: XSS protection and clean inputs
+- **Rate Limiting**: Debounced form submissions
 
-Simply open [Lovable](https://lovable.dev/projects/1c20554a-2ecc-4529-9f4c-c410ee0a9e8c) and click on Share -> Publish.
+## 📋 Validation Rules
 
-## Can I connect a custom domain to my Lovable project?
+- **Payer Name**: Minimum 2 real letters
+- **Amount**: Minimum Rp 1,000 with Rupiah formatting
+- **Description**: Minimum 5 letters (not just symbols/numbers)
+- **Proof Upload**: JPG/PNG, auto-resize to ≤1.5MB, min 300×300px resolution
+- **Date**: Valid date format, defaults to today
 
-Yes, you can!
+## 🧾 Receipt System
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Receipt Number**: `SR-YYYYMMDD-####` (daily increment)
+- **Invoice Number**: `INV-YYYYMMDD-XXXX` (separate sequence)
+- **Signature**: 16-char HMAC hash for verification
+- **Auto-download**: JPG format with 2x scaling for clarity
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📞 WhatsApp Template
+
+```
+Konfirmasi Pembayaran
+
+Nama: [NAMA]
+Tanggal: [DD MMM YYYY, HH:mm]
+Metode: [QRIS|Transfer|E-Wallet|Cash]
+Nominal: Rp [NOMINAL_FORMATTED]
+Deskripsi: [DESKRIPSI]
+Referensi/Catatan: [REFERENSI_OR_MINUS]
+
+No. Struk: [SR-YYYYMMDD-####]
+No. Invoice: [INV-YYYYMMDD-XXXX]
+Signature: [HASH16]
+
+Bukti Bayar: Terlampir di pesan berikut
+Struk JPG: Sudah saya simpan
+
+(Dikirim otomatis dari PayLite Self-Report)
+```
+
+## 🎨 Component Architecture
+
+```
+src/
+├── components/
+│   ├── Footer.tsx              # Social links & branding
+│   ├── LoaderGlow.tsx          # Neon loading animation
+│   ├── NeonGridBackground.tsx  # Animated grid background
+│   ├── ProgressSteps.tsx       # 4-step progress indicator
+│   ├── ReceiptActions.tsx      # Generate & WhatsApp actions
+│   └── ReceiptTemplate.tsx     # JPG receipt template
+├── lib/
+│   ├── env.ts                  # Environment configuration
+│   ├── image/autoResize.ts     # Image compression utilities
+│   ├── numbering/              # Receipt & invoice numbering
+│   ├── signature.ts            # HMAC signature generation
+│   ├── validation/payment.ts   # Zod schemas & validators
+│   └── wa/buildText.ts         # WhatsApp message builder
+└── pages/
+    ├── LandingPage.tsx         # Home page with features
+    ├── PaymentMethodPage.tsx   # Method selection & instructions
+    └── PaymentFormPage.tsx     # Form + receipt generation
+```
+
+## 🔍 SEO Optimization
+
+- **Meta Tags**: Optimized title, description, keywords
+- **Open Graph**: Social media previews
+- **Twitter Cards**: Rich link previews
+- **Semantic HTML**: Proper heading hierarchy
+- **Performance**: Lazy loading, optimized images
+- **Lighthouse Score Target**: 95+ (Performance, A11y, SEO)
+
+## 🧪 Testing WhatsApp Integration
+
+1. Fill out the payment form completely
+2. Upload a valid image (JPG/PNG, >300x300px)
+3. Click "Generate Struk JPG" - receipt auto-downloads
+4. Click "Konfirmasi Pembayaran" - WhatsApp opens with formatted message
+5. Send the message to complete the flow
+
+## 🎯 Key Features Implemented
+
+✅ **Auto-fill** date & payment method from selection  
+✅ **Progress indicator** across all steps  
+✅ **Copy to clipboard** for account numbers  
+✅ **Image auto-resize** with preview & validation  
+✅ **5-letter minimum** validation for descriptions  
+✅ **Receipt auto-download** with smooth loader  
+✅ **Unique numbering** for receipts & invoices  
+✅ **WhatsApp integration** with formatted messages  
+✅ **Footer with social links** and Saweria support  
+✅ **SEO optimization** ready for production  
+
+## 📞 Support
+
+For support or feature requests, contact via:
+- Instagram: [@markxplorer](https://instagram.com/markxplorer)
+- Telegram: [@markxplorer](https://t.me/markxplorer)
+- GitHub: [markxplorer](https://github.com/markxplorer)
+- Support: [Saweria](https://saweria.co/markxplorer)
+
+---
+
+**PayLite Self-Report** - Simple Payment Confirmation with Neon Speed ⚡
