@@ -51,8 +51,10 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				neon: {
+					blue: 'hsl(var(--neon-blue))',
 					cyan: 'hsl(var(--neon-cyan))',
 					green: 'hsl(var(--neon-green))',
+					'blue-glow': 'hsl(var(--neon-blue-glow))',
 					'cyan-glow': 'hsl(var(--neon-cyan-glow))',
 					'green-glow': 'hsl(var(--neon-green-glow))'
 				},

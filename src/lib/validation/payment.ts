@@ -36,15 +36,15 @@ export const PaymentFormSchema = z.object({
     ),
   
   proofFile: z
-    .instanceof(File)
-    .refine((file) => file.size > 0, "Bukti pembayaran wajib diupload")
+    .any()
+    .refine((file) => file, "Bukti pembayaran wajib diupload")
     .refine(
-      (file) => ["image/jpeg", "image/png"].includes(file.type),
+      (file) => file && ["image/jpeg", "image/png"].includes(file.type),
       "File harus berformat JPG atau PNG"
     )
     .refine(
-      (file) => file.size <= 5 * 1024 * 1024, // 5MB before compression
-      "File maksimal 5MB"
+      (file) => file && file.size <= 2 * 1024 * 1024, // 2MB max
+      "File maksimal 2MB"
     ),
   
   reference: z.string().optional(),

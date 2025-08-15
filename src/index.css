@@ -4,42 +4,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* PayLite Self-Report Design System - Neon Theme */
+/* PayLite Self-Report Design System - Semi-Futuristic Theme */
 
 @layer base {
   :root {
     /* Core Dark Theme */
     --background: 0 0% 4.3%; /* #0B0B0B */
-    --foreground: 180 100% 100%; /* White text */
+    --foreground: 0 0% 96%; /* Light text */
 
-    /* Neon Colors */
+    /* Neon Colors - Semi-Futuristic */
+    --neon-blue: 195 100% 50%; /* #00E5FF */
     --neon-cyan: 180 100% 50%; /* #00FFFF */
     --neon-green: 98 100% 54%; /* #39FF14 */
+    --neon-blue-glow: 195 100% 70%;
     --neon-cyan-glow: 180 100% 70%;
     --neon-green-glow: 98 100% 70%;
 
-    /* Glass & Surface */
-    --card: 0 0% 7%; /* Darker surface */
-    --card-foreground: 180 100% 95%;
-    --glass: 0 0% 10% / 0.1; /* Glass effect */
-    --glass-border: 180 50% 50% / 0.2;
+    /* Glass & Surface - Enhanced Glassmorphism */
+    --card: 0 0% 8%; /* Slightly lighter surface */
+    --card-foreground: 0 0% 94%;
+    --glass: 0 0% 8% / 0.12; /* Enhanced glass transparency */
+    --glass-border: 195 100% 50% / 0.25; /* Neon blue border */
 
-    /* Primary (Neon Cyan) */
-    --primary: 180 100% 50%;
+    /* Primary (Neon Blue) */
+    --primary: 195 100% 50%;
     --primary-foreground: 0 0% 4.3%;
-    --primary-glow: 180 100% 70%;
+    --primary-glow: 195 100% 70%;
 
-    /* Secondary (Neon Green) */
-    --secondary: 98 100% 54%;
+    /* Secondary (Neon Cyan) */
+    --secondary: 180 100% 50%;
     --secondary-foreground: 0 0% 4.3%;
-    --secondary-glow: 98 100% 70%;
+    --secondary-glow: 180 100% 70%;
 
     /* Muted */
     --muted: 0 0% 15%;
     --muted-foreground: 180 10% 70%;
 
     /* Accent */
-    --accent: 180 100% 60%;
+    --accent: 195 100% 60%;
     --accent-foreground: 0 0% 4.3%;
 
     /* Destructive */
@@ -47,14 +49,18 @@
     --destructive-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 180 30% 20% / 0.3;
-    --input: 0 0% 12%;
-    --input-border: 180 50% 40% / 0.4;
-    --ring: 180 100% 50%;
+    --border: 195 30% 25% / 0.3;
+    --input: 0 0% 6%;
+    --input-border: 195 50% 50% / 0.3;
+    --ring: 195 100% 50%;
 
     /* Grid & Glow Effects */
-    --grid-color: 180 100% 50% / 0.1;
-    --glow-radius: 20px;
+    --grid-color: 195 100% 50% / 0.15;
+    --grid-hover: 195 100% 50% / 0.3;
+    --glow-radius: 16px;
+    
+    /* Radial Gradient */
+    --radial-dark: radial-gradient(ellipse at center, transparent 0%, hsl(0 0% 2%) 70%);
     
     --radius: 0.75rem;
   }
@@ -69,13 +75,12 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
     background-image: 
-      radial-gradient(circle at 25% 25%, hsl(var(--neon-cyan)) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, hsl(var(--neon-green)) 0%, transparent 50%),
-      linear-gradient(90deg, transparent 49%, hsl(var(--grid-color)) 50%, transparent 51%),
-      linear-gradient(0deg, transparent 49%, hsl(var(--grid-color)) 50%, transparent 51%);
-    background-size: 100px 100px, 100px 100px, 50px 50px, 50px 50px;
-    background-position: 0 0, 100% 100%, 0 0, 0 0;
-    animation: grid-float 20s ease-in-out infinite;
+      var(--radial-dark),
+      linear-gradient(90deg, transparent 49.5%, hsl(var(--grid-color)) 50%, transparent 50.5%),
+      linear-gradient(0deg, transparent 49.5%, hsl(var(--grid-color)) 50%, transparent 50.5%);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    background-position: 0 0, 0 0, 0 0;
+    animation: grid-subtle 30s ease-in-out infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -84,35 +89,65 @@
     }
   }
 
-  @keyframes grid-float {
-    0%, 100% { background-position: 0 0, 100% 100%, 0 0, 0 0; }
-    50% { background-position: -10px -10px, calc(100% + 10px) calc(100% + 10px), -5px -5px, -5px -5px; }
+  @keyframes grid-subtle {
+    0%, 100% { background-position: 0 0, 0 0, 0 0; }
+    50% { background-position: 0 0, -2px -2px, -2px -2px; }
   }
 }
 
 @layer components {
-  /* Glass Card Effect */
+  /* Glass Card Effect - Enhanced Glassmorphism */
   .glass-card {
-    @apply bg-[hsl(var(--glass))] backdrop-blur-xl border border-[hsl(var(--glass-border))] rounded-[var(--radius)];
+    @apply bg-[hsl(var(--glass))] backdrop-blur-[12px] border border-[hsl(var(--glass-border))] rounded-[var(--radius)];
+    position: relative;
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, hsl(var(--glass-border)), transparent 50%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    padding: 1px;
+    pointer-events: none;
   }
 
   /* Neon Glow Effects */
+  .neon-glow-blue {
+    box-shadow: 0 0 var(--glow-radius) hsl(var(--neon-blue) / 0.4);
+  }
+
   .neon-glow-cyan {
-    box-shadow: 0 0 var(--glow-radius) hsl(var(--neon-cyan) / 0.5);
+    box-shadow: 0 0 var(--glow-radius) hsl(var(--neon-cyan) / 0.4);
   }
 
   .neon-glow-green {
-    box-shadow: 0 0 var(--glow-radius) hsl(var(--neon-green) / 0.5);
+    box-shadow: 0 0 var(--glow-radius) hsl(var(--neon-green) / 0.4);
+  }
+
+  .neon-text-blue {
+    color: hsl(var(--neon-blue));
+    text-shadow: 0 0 8px hsl(var(--neon-blue) / 0.4);
   }
 
   .neon-text-cyan {
     color: hsl(var(--neon-cyan));
-    text-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.5);
+    text-shadow: 0 0 8px hsl(var(--neon-cyan) / 0.4);
   }
 
   .neon-text-green {
     color: hsl(var(--neon-green));
-    text-shadow: 0 0 10px hsl(var(--neon-green) / 0.5);
+    text-shadow: 0 0 8px hsl(var(--neon-green) / 0.4);
+  }
+
+  /* Grid Hover Effect */
+  .grid-hover:hover {
+    background-image: 
+      var(--radial-dark),
+      linear-gradient(90deg, transparent 49.5%, hsl(var(--grid-hover)) 50%, transparent 50.5%),
+      linear-gradient(0deg, transparent 49.5%, hsl(var(--grid-hover)) 50%, transparent 50.5%);
   }
 
   /* Hero Button */
@@ -139,11 +174,11 @@
            transition-all duration-300 font-medium px-6 py-3 rounded-[var(--radius)];
   }
 
-  /* Input Style */
+  /* Input Style - Enhanced Glass */
   .input-neon {
-    @apply bg-[hsl(var(--input))] border border-[hsl(var(--input-border))]
+    @apply bg-[hsl(var(--input))] backdrop-blur-[8px] border border-[hsl(var(--input-border))]
            focus:border-[hsl(var(--primary))] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
-           focus:shadow-[0_0_15px_hsl(var(--primary)/0.3)]
+           focus:shadow-[0_0_12px_hsl(var(--primary)/0.3)]
            text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))]
            transition-all duration-300 rounded-[var(--radius)] px-4 py-3;
   }

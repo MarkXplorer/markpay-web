@@ -8,7 +8,7 @@ import { ProgressSteps } from '@/components/ProgressSteps';
 import { Footer } from '@/components/Footer';
 import { ReceiptActions } from '@/components/ReceiptActions';
 import { PaymentFormSchema, PaymentFormData, formatCurrency, parseCurrency } from '@/lib/validation/payment';
-import { autoResizeImage, createImagePreview } from '@/lib/image/autoResize';
+import { createImagePreview } from '@/lib/image/autoResize';
 import { useToast } from '@/hooks/use-toast';
 
 export default function PaymentFormPage() {
@@ -43,7 +43,7 @@ export default function PaymentFormPage() {
     }
   }, [setValue]);
 
-  // Handle file upload
+  // Handle file upload - no auto-resize, use original size
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -51,19 +51,26 @@ export default function PaymentFormPage() {
     setIsImageProcessing(true);
     
     try {
-      // Create preview first
+      // Validate file type
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        throw new Error('Format file harus JPG atau PNG');
+      }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error('Ukuran file maksimal 2MB');
+      }
+      
+      // Create preview
       const preview = await createImagePreview(file);
       setImagePreview(preview);
       
-      // Auto-resize the image
-      const resizedFile = await autoResizeImage(file);
-      
-      // Update form
-      setValue('proofFile', resizedFile, { shouldValidate: true });
+      // Update form with original file (no resize)
+      setValue('proofFile', file, { shouldValidate: true });
       
       toast({
         title: "Bukti berhasil diupload!",
-        description: `File berhasil diproses (${(resizedFile.size / 1024 / 1024).toFixed(1)}MB)`,
+        description: `File siap digunakan (${(file.size / 1024 / 1024).toFixed(1)}MB)`,
       });
       
     } catch (error) {
@@ -117,7 +124,7 @@ export default function PaymentFormPage() {
             </Link>
             
             <h1 className="text-4xl font-bold mb-4">
-              <span className="neon-text-green">Form Pembayaran</span>
+              <span className="neon-text-blue">Form Pembayaran</span>
             </h1>
             <p className="text-muted-foreground">
               Isi detail pembayaran dan upload bukti transfer dengan lengkap
@@ -251,7 +258,7 @@ export default function PaymentFormPage() {
                         {isImageProcessing ? 'Memproses gambar...' : 'Upload Bukti Transfer'}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        JPG/PNG maksimal 5MB • Auto-resize ke 1.5MB • Min 300×300px
+                        JPG/PNG maksimal 2MB • Ukuran asli file akan digunakan
                       </p>
                     </div>
                   </div>
@@ -298,7 +305,9 @@ export default function PaymentFormPage() {
                 )}
                 
                 {errors.proofFile && (
-                  <p className="text-destructive text-sm mt-2">{errors.proofFile.message}</p>
+                  <p className="text-destructive text-sm mt-2">
+                    {typeof errors.proofFile.message === 'string' ? errors.proofFile.message : 'Error validasi file'}
+                  </p>
                 )}
               </div>
 
