@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Download, MessageCircle, Copy } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { PaymentFormData } from '@/lib/validation/payment';
@@ -18,7 +18,6 @@ interface ReceiptActionsProps {
 
 export const ReceiptActions = ({ formData, onConfirmation }: ReceiptActionsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [receiptGenerated, setReceiptGenerated] = useState(false);
   const [receiptInfo, setReceiptInfo] = useState<{
     receiptNumber: string;
     invoiceNumber: string;
@@ -29,67 +28,50 @@ export const ReceiptActions = ({ formData, onConfirmation }: ReceiptActionsProps
   const receiptRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const generateReceipt = async () => {
-    if (!receiptRef.current) return;
-    
-    setIsGenerating(true);
-    
-    try {
-      // Generate receipt info
-      const receiptNumber = generateReceiptNumber();
-      const invoiceNumber = generateInvoiceNumber();
-      const signature = generateSignature(
-        formData.paymentDate,
-        formData.payerName,
-        formData.amount
-      );
-      const receiptId = generateReceiptId();
+  // Auto-generate receipt when component mounts
+  useEffect(() => {
+    const autoGenerateReceipt = async () => {
+      setIsGenerating(true);
       
-      const newReceiptInfo = {
-        receiptNumber,
-        invoiceNumber,
-        signature,
-        receiptId
-      };
-      
-      setReceiptInfo(newReceiptInfo);
-      
-      // Wait for render
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Generate image
-      const dataUrl = await toPng(receiptRef.current, {
-        cacheBust: true,
-        backgroundColor: '#ffffff',
-        pixelRatio: 2,
-        width: 400,
-        height: 600,
-      });
-      
-      // Auto-download
-      const link = document.createElement('a');
-      link.download = `receipt-${receiptNumber}.jpg`;
-      link.href = dataUrl;
-      link.click();
-      
-      setReceiptGenerated(true);
-      
-      toast({
-        title: "Struk berhasil dibuat!",
-        description: "File JPG otomatis terunduh. Silakan lanjut konfirmasi pembayaran.",
-      });
-      
-    } catch (error) {
-      console.error('Error generating receipt:', error);
-      toast({
-        title: "Gagal membuat struk",
-        description: "Terjadi kesalahan saat membuat struk. Silakan coba lagi.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+      try {
+        // Generate receipt info
+        const receiptNumber = generateReceiptNumber();
+        const invoiceNumber = generateInvoiceNumber();
+        const signature = generateSignature(
+          formData.paymentDate,
+          formData.payerName,
+          formData.amount
+        );
+        const receiptId = generateReceiptId();
+        
+        const newReceiptInfo = {
+          receiptNumber,
+          invoiceNumber,
+          signature,
+          receiptId
+        };
+        
+        setReceiptInfo(newReceiptInfo);
+        
+        toast({
+          title: "Struk berhasil dibuat!",
+          description: "Silakan lanjut konfirmasi pembayaran.",
+        });
+        
+      } catch (error) {
+        console.error('Error generating receipt:', error);
+        toast({
+          title: "Gagal membuat struk",
+          description: "Terjadi kesalahan saat membuat struk. Silakan coba lagi.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    autoGenerateReceipt();
+  }, [formData, toast]);
 
   const downloadReceiptAgain = async () => {
     if (!receiptRef.current || !receiptInfo) return;
@@ -170,55 +152,42 @@ export const ReceiptActions = ({ formData, onConfirmation }: ReceiptActionsProps
       )}
 
       {/* Action Buttons */}
-      {!isGenerating && (
+      {!isGenerating && receiptInfo && (
         <div className="glass-card p-6 space-y-4">
           <h3 className="text-lg font-semibold neon-text-cyan mb-4">
-            Langkah Terakhir
+            Konfirmasi Pembayaran
           </h3>
           
-          {!receiptGenerated ? (
-            <button
-              onClick={generateReceipt}
-              className="btn-hero w-full flex items-center justify-center gap-3"
-            >
-              <Download className="w-5 h-5" />
-              Generate Struk JPG
-            </button>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex gap-3">
-                <button
-                  onClick={downloadReceiptAgain}
-                  className="btn-glass flex-1 flex items-center justify-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Ulang
-                </button>
-                
-                <button
-                  onClick={copySummary}
-                  className="btn-glass flex-1 flex items-center justify-center gap-2"
-                >
-                  <Copy className="w-4 h-4" />
-                  Salin Ringkasan
-                </button>
-              </div>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <button
+                onClick={downloadReceiptAgain}
+                className="btn-glass flex-1 flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download Struk
+              </button>
               
               <button
-                onClick={confirmPayment}
-                className="btn-secondary w-full flex items-center justify-center gap-3"
+                onClick={copySummary}
+                className="btn-glass flex-1 flex items-center justify-center gap-2"
               >
-                <MessageCircle className="w-5 h-5" />
-                Konfirmasi Pembayaran (WhatsApp)
+                <Copy className="w-4 h-4" />
+                Salin Ringkasan
               </button>
             </div>
-          )}
+            
+            <button
+              onClick={confirmPayment}
+              className="btn-secondary w-full flex items-center justify-center gap-3"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Konfirmasi Pembayaran (WhatsApp)
+            </button>
+          </div>
           
           <p className="text-sm text-muted-foreground text-center">
-            {!receiptGenerated 
-              ? "Klik untuk membuat dan otomatis download struk JPG"
-              : "Struk sudah dibuat. Klik 'Konfirmasi Pembayaran' untuk mengirim ke WhatsApp"
-            }
+            Struk otomatis dibuat. Klik 'Konfirmasi Pembayaran' untuk mengirim ke WhatsApp
           </p>
         </div>
       )}
