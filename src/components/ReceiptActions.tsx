@@ -105,12 +105,24 @@ export const ReceiptActions = ({ formData, onConfirmation }: ReceiptActionsProps
   const confirmPayment = () => {
     if (!receiptInfo) return;
     
+    // Download payment proof automatically for WhatsApp attachment
+    if (formData.proofFile) {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(formData.proofFile);
+      link.download = `bukti-bayar-${receiptInfo.receiptNumber}.${formData.proofFile.type.split('/')[1]}`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+    
     const whatsappText = buildWhatsAppText(formData, receiptInfo);
     openWhatsApp(whatsappText, ENV.OWNER_WHATSAPP);
     
     toast({
       title: "WhatsApp terbuka",
-      description: "Kirim pesan untuk menyelesaikan konfirmasi pembayaran.",
+      description: formData.proofFile 
+        ? "Bukti pembayaran telah diunduh. Lampirkan file tersebut ke pesan WhatsApp."
+        : "Kirim pesan untuk menyelesaikan konfirmasi pembayaran.",
+      duration: 6000,
     });
     
     onConfirmation?.();

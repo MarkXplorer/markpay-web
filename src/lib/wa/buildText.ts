@@ -31,7 +31,7 @@ No. Struk: ${receiptInfo.receiptNumber}
 No. Invoice: ${receiptInfo.invoiceNumber}
 Signature: ${receiptInfo.signature}
 
-Bukti Bayar: Terlampir di pesan berikut
+Bukti Bayar: Terlampir di pesan ini
 Struk JPG: Sudah saya simpan
 
 (Dikirim otomatis dari PayLite Self-Report)`;
